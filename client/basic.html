@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Socket.IO Chat</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 3rem;
+      font-family: sans-serif;
+    }
+    #form {
+      background: rgba(0, 0, 0, 0.1);
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      height: 3rem;
+      padding: 0.25rem;
+    }
+    #input {
+      flex-grow: 1;
+      padding: 0 1rem;
+      border-radius: 2rem;
+      border: none;
+      margin: 0.25rem;
+    }
+    #form > button {
+      background: #333;
+      border: none;
+      color: white;
+      padding: 0 1rem;
+      margin: 0.25rem;
+      border-radius: 5px;
+    }
+    #messages {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#messages > li {
+  padding: 8px 12px;
+  margin: 6px 12px;
+  border-radius: 12px;
+  max-width: 60%;
+  clear: both; /* ✅ ensures each message is on its own line */
+}
+
+/* Style for your own messages */
+.my-message {
+  background-color: #dcf8c6;
+  float: right;
+  text-align: right;
+}
+
+/* Style for others' messages */
+li:not(.my-message) {
+  background-color: #f1f0f0;
+  float: left;
+  text-align: left;
+}
+  </style>
+</head>
+<body>
+  <div id="typing" style="margin: 1rem; font-style: italic; color: gray;"></div>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input id="input" autocomplete="off" placeholder="Type a message..." />
+    <button>Send</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const messages = document.getElementById('messages');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    let username = '';
+
+    // Get username from server
+    socket.on("new user", (name) => {
+        username = name;
+        alert(`${username}, you have joined the chat`);
+        socket.emit("connected");  // Now after getting username, emit connected
+    });
+
+    // Listen for broadcasted connection message
+    socket.on("connected", (msg) => {
+        alert(msg);
+    });
+
+    // Typing indicator
+    input.addEventListener('input', () => {
+      socket.emit('typing');
+    });
+
+    socket.on('typing', (msg) => {
+      const typingDiv = document.getElementById('typing');
+      typingDiv.innerText = msg;
+      setTimeout(() => (typingDiv.innerText = ''), 1500);
+    });
+
+    // Message submission
+    form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (input.value) {
+        // Show message on sender's own UI
+        var item = document.createElement('li');
+        item.textContent = `You: ${input.value}`;
+        item.classList.add('my-message'); // Add class for styling
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+        // Send message to server
+        socket.emit('chat message', input.value);
+        input.value = '';
+    }
+});
+
+    // Display message from other users
+    socket.on('chat message', (msg) => {
+      const li = document.createElement('li');
+      li.textContent = msg;
+      messages.appendChild(li);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    // User left
+    socket.on("disconnected", (msg) => {
+        alert(msg);
+    });
+  </script>
+</body>
+</html>
