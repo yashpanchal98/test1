@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Signup</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="auth-container">
+        <div id="loginForm">
+            <h2>Login</h2>
+            <input id="username" type="text" placeholder="Enter your username" />
+            <input id="password" type="password" placeholder="Enter your password" />
+            <button id="loginButton">Login</button>
+
+            <div id="registerOption">
+                <p>Don't have an account? <a href="#" id="registerLink">Register</a></p>
+            </div>
+        </div>
+
+        <div id="registerForm">
+            <h2>Register</h2>
+            <input id="newUsername" type="text" placeholder="Enter your username" />
+            <input id="newPassword" type="password" placeholder="Enter your password" />
+            <input id="confirmPassword" type="password" placeholder="Confirm your password" />
+            <button id="registerButton">Register</button>
+
+            <div id="loginOption">
+                <p>Already have an account? <a href="#" id="loginLink">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get elements
+        const loginButton = document.getElementById('loginButton');
+        const registerButton = document.getElementById('registerButton');
+        const registerLink = document.getElementById('registerLink');
+        const loginLink = document.getElementById('loginLink');
+
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const newUsernameInput = document.getElementById('newUsername');
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        // Handle login button click
+        loginButton.addEventListener('click', () => {
+            const enteredUsername = usernameInput.value;
+            const enteredPassword = passwordInput.value;
+
+            if (enteredUsername && enteredPassword) {
+                fetch('http://localhost:5000/auth/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: enteredUsername, password: enteredPassword })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Login response:', data); // ✅ You already saw this in console
+
+                        if (data.message === 'Login Successful') {
+                            // Save info to localStorage (optional)
+                            localStorage.setItem('username', data.username);
+                            localStorage.setItem('token', data.token);
+
+                            // Redirect to chat page
+                            window.location.href = 'chat.html';
+                        } else {
+                            alert('Login failed. Try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Something went wrong. Try again.');
+                    });
+            } else {
+                alert('Please enter both username and password.');
+            }
+        });
+
+        // Handle register button click
+        registerButton.addEventListener('click', () => {
+            const enteredUsername = newUsernameInput.value;
+            const enteredPassword = newPasswordInput.value;
+            const confirmedPassword = confirmPasswordInput.value;
+
+            if (enteredUsername && enteredPassword && confirmedPassword) {
+                if (enteredPassword === confirmedPassword) {
+                    // Send the register request to the server
+                    fetch('http://localhost:5000/auth/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username: enteredUsername, password: enteredPassword }),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            console.log('Server response:', data);
+
+                            if (data.message === "User registered successfully") {
+                                alert('Registration successful! Please log in.');
+                                toggleForms(); // or redirect to login
+                            } else {
+                                alert('Registration failed. Try again.');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            alert('Registration failed. Try again.');
+                        });
+                } else {
+                    alert('Passwords do not match.');
+                }
+            } else {
+                alert('Please fill in all fields.');
+            }
+        });
+
+        // Toggle between login and register forms
+        registerLink.addEventListener('click', () => {
+            toggleForms();
+        });
+
+        loginLink.addEventListener('click', () => {
+            toggleForms();
+        });
+
+        function toggleForms() {
+            // Toggle display between the login and register forms
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

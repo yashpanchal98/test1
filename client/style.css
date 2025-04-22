@@ -1,0 +1,113 @@
+/* Body styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+
+/* Styling for the login/register container */
+#loginForm, #registerForm {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+/* Flex styling for form elements */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input field styling */
+input {
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Button styling */
+button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #218838;
+}
+
+/* Paragraph styling for small text */
+p {
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Link styling */
+a {
+  color: #007bff;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Messages container for chat */
+#messages-container {
+  height: 300px;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+}
+
+/* Message input box styling */
+#message-input {
+  width: 80%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Send button styling */
+#send-btn {
+  width: 18%;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Register/Log-in form specific styling */
+#loginForm, #registerForm {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hide the register form initially */
+#registerForm {
+  display: none;
+}
+
+/* Auth container for centering login/register content */
+#auth-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
