@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
@@ -9,12 +10,16 @@ const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
 // Register Route
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
+    console.log('Request body:', req.body); 
     try {
         const existingUser = await User.findOne({ username });
         if (existingUser) return res.status(400).json({ msg: 'User already exists' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, password: hashedPassword });
+        const newUser = new User({ 
+            username: username, 
+            password: hashedPassword 
+        });
 
         await newUser.save();
 
@@ -30,10 +35,10 @@ router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ username });
-        if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
+        if (!user) return res.status(400).json({ msg: 'Invalid username' });
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
+        if (!isMatch) return res.status(400).json({ msg: 'Invalid password' });
 
         const token = jwt.sign({ id: user._id, username }, JWT_SECRET, { expiresIn: '1d' });
         res.status(200).json({ token, username });
